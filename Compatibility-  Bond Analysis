@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="cosmic">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bond Analysis - Bind</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff6b6b;
+            --secondary: #4ecdc4;
+            --bg-dark: #0f0f1e;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+        [data-theme="cosmic"] {
+            --bg-gradient: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 50%, #16213e 100%);
+            --accent: #ff6b6b;
+            --accent-secondary: #4ecdc4;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+        }
+        [data-theme="aurora"] {
+            --bg-gradient: linear-gradient(135deg, #0d3328 0%, #1a4d3a 50%, #0f2e3f 100%);
+            --accent: #00d9a5;
+            --accent-secondary: #00b4d8;
+            --text-primary: #e0f2f1;
+            --text-secondary: #80cbc4;
+            --glass-bg: rgba(0, 217, 165, 0.08);
+        }
+        [data-theme="solar"] {
+            --bg-gradient: linear-gradient(135deg, #2d1b0e 0%, #4a2c17 50%, #1e1a2e 100%);
+            --accent: #ff9f43;
+            --accent-secondary: #feca57;
+            --text-primary: #fff5e6;
+            --text-secondary: #ffd8a8;
+            --glass-bg: rgba(255, 159, 67, 0.1);
+        }
+        [data-theme="midnight"] {
+            --bg-gradient: linear-gradient(135deg, #000000 0%, #0a0a0a 50%, #1a1a2e 100%);
+            --accent: #6c5ce7;
+            --accent-secondary: #a29bfe;
+            --text-primary: #dfe6e9;
+            --text-secondary: #b2bec3;
+            --glass-bg: rgba(108, 92, 231, 0.08);
+        }
+        [data-theme="rose"] {
+            --bg-gradient: linear-gradient(135deg, #2d1f2d 0%, #3d2b3d 50%, #2d2636 100%);
+            --accent: #fd79a8;
+            --accent-secondary: #fdcb6e;
+            --text-primary: #ffeaa7;
+            --text-secondary: #fab1a0;
+            --glass-bg: rgba(253, 121, 168, 0.1);
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-primary);
+            min-height: 100vh;
+            transition: all 0.5s ease;
+        }
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+        }
+        .nav-bottom {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--glass-border);
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-around;
+            z-index: 100;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 16px;
+            border-radius: 16px;
+            transition: all 0.3s ease;
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+        .nav-item.active {
+            color: var(--accent);
+            background: rgba(255,255,255,0.1);
+        }
+        .score-ring {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: conic-gradient(var(--accent) 0deg 302deg, rgba(255,255,255,0.1) 302deg 360deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .score-ring::before {
+            content: '';
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            background: var(--bg-dark);
+            border-radius: 50%;
+        }
+        .score-text {
+            position: relative;
+            z-index: 1;
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .aspect-bar {
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .aspect-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+            border-radius: 4px;
+            transition: width 1s ease-out;
+        }
+    </style>
+</head>
+<body class="pb-24">
+    <header class="fixed top-0 left-0 right-0 z-50 px-6 py-4 flex justify-between items-center glass-card rounded-none border-x-0 border-t-0">
+        <div class="flex items-center gap-3">
+            <a href="index.html" class="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <div>
+                <h1 class="font-bold text-lg">Bond Analysis</h1>
+                <div class="text-xs text-[var(--text-secondary)]">Synastry & Composite</div>
+            </div>
+        </div>
+        <button onclick="window.location.href='index.html'" class="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center">
+            <i class="fas fa-cog"></i>
+        </button>
+    </header>
+
+    <main class="pt-24 px-6 max-w-4xl mx-auto">
+        <!-- Overall Score -->
+        <div class="glass-card p-8 mb-6 text-center relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-br from-[var(--accent)] to-[var(--accent-secondary)] opacity-5"></div>
+            <div class="relative z-10">
+                <div class="score-ring mx-auto mb-4">
+                    <div class="score-text">84%</div>
+                </div>
+                <h2 class="text-2xl font-bold mb-2">Powerful Opposition</h2>
+                <p class="text-[var(--text-secondary)] max-w-md mx-auto mb-4">
+                    Aries meets Libra in a dance of attraction and balance. Fire and Air create intellectual passion.
+                </p>
+                <button onclick="speakText('Your compatibility score is 84 percent. This is a powerful opposition creating dynamic balance. Aries and Libra are opposite signs, creating natural attraction and balance. The Fire and Air combination fuels intellectual passion and creative growth. This is a relationship of equals where both partners teach each other vital lessons.')" class="px-6 py-2 rounded-full bg-white/10 hover:bg-white/20 transition-all text-sm flex items-center gap-2 mx-auto">
+                    <i class="fas fa-volume-high"></i>
+                    Listen to Analysis
+                </button>
+            </div>
+        </div>
+
+        <!-- Partners -->
+        <div class="grid grid-cols-2 gap-4 mb-6">
+            <div class="glass-card p-5 text-center">
+                <div class="w-16 h-16 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 mx-auto mb-3 flex items-center justify-center text-2xl">
+                    ♈
+                </div>
+                <h3 class="font-bold mb-1">Alex</h3>
+                <p class="text-xs text-[var(--text-secondary)] mb-2">Sun: Aries</p>
+                <div class="space-y-1 text-xs">
+                    <div class="flex justify-between px-2 py-1 rounded bg-white/5">
+                        <span class="text-[var(--text-secondary)]">Moon</span>
+                        <span>Scorpio</span>
+                    </div>
+                    <div class="flex justify-between px-2 py-1 rounded bg-white/5">
+                        <span class="text-[var(--text-secondary)]">Rising</span>
+                        <span>Leo</span>
+                    </div>
+                    <div class="flex justify-between px-2 py-1 rounded bg-white/5">
+                        <span class="text-[var(--text-secondary)]">Venus</span>
+                        <span>Gemini</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card p-5 text-center">
+                <div class="w-16 h-16 rounded-full bg-gradient-to-br from-pink-400 to-purple-600 mx-auto mb-3 flex items-center justify-center text-2xl">
+                    ♎
+                </div>
+                <h3 class="font-bold mb-1">Jordan</h3>
+                <p class="text-xs text-[var(--text-secondary)] mb-2">Sun: Libra</p>
+                <div class="space-y-1 text-xs">
+                    <div class="flex justify-between px-2 py-1 rounded bg-white/5">
+                        <span class="text-[var(--text-secondary)]">Moon</span>
+                        <span>Pisces</span>
+                    </div>
+                    <div class="flex justify-between px-2 py-1 rounded bg-white/5">
+                        <span class="text-[var(--text-secondary)]">Rising</span>
+                        <span>Cancer</span>
+                    </div>
+                    <div class="flex justify-between px-2 py-1 rounded bg-white/5">
+                        <span class="text-[var(--text-secondary)]">Venus</span>
+                        <span>Leo</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Scores -->
+        <h3 class="text-lg font-semibold mb-4">Compatibility Breakdown</h3>
+        
+        <div class="space-y-4 mb-8">
+            <div class="glass-card p-5">
+                <div class="flex justify-between items-center mb-2">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-heart text-pink-400"></i>
+                        <span class="font-medium">Romantic & Emotional</span>
+                    </div>
+                    <span class="text-green-400 font-bold">92%</span>
+                </div>
+                <div class="aspect-bar mb-2">
+                    <div class="aspect-fill" style="width: 92%"></div>
+                </div>
+                <p class="text-xs text-[var(--text-secondary)] mb-3">
+                    Venus in Gemini meets Venus in Leo—playful meets dramatic. Mental stimulation meets grand gestures.
+                </p>
+                <button onclick="speakText('Romantic compatibility: 92 percent. Venus in Gemini meets Venus in Leo. Playful meets dramatic. Mental stimulation meets grand gestures. Alex needs variety and intellectual connection. Jordan needs admiration and loyalty displays. Plan dates that combine curiosity with romance.')" class="w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center">
+                    <i class="fas fa-volume-high text-xs"></i>
+                </button>
+            </div>
+
+            <div class="glass-card p-5">
+                <div class="flex justify-between items-center mb-2">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-comments text-blue-400"></i>
+                        <span class="font-medium">Communication</span>
+                    </div>
+                    <span class="text-yellow-400 font-bold">78%</span>
+                </div>
+                <div class="aspect-bar mb-2">
+                    <div class="aspect-fill" style="width: 78%"></div>
+                </div>
+                <p class="text-xs text-[var(--text-secondary)] mb-3">
+                    Direct Aries vs diplomatic Libra. Balance honesty with tact. Practice the pause.
+                </p>
+                <button onclick="speakText('Communication compatibility: 78 percent. Direct Aries versus diplomatic Libra. Balance honesty with tact. Alex speaks immediately and bluntly. Jordan considers words carefully. Both styles have value. Practice the pause: Alex counts to 3 before speaking. Jordan commits to addressing issues within 24 hours.')" class="w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center">
+                    <i class="fas fa-volume-high text-xs"></i>
+                </button>
+            </div>
+
+            <div class="glass-card p-5">
+                <div class="flex justify-between items-center mb-2">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-fire text-red-400"></i>
+                        <span class="font-medium">Physical & Passion</span>
+                    </div>
+                    <span class="text-green-400 font-bold">88%</span>
+                </div>
+                <div class="aspect-bar mb-2">
+                    <div class="aspect-fill" style="width: 88%"></div>
+                </div>
+                <p class="text-xs text-[var(--text-secondary)] mb-3">
+                    Mars in Leo meets Mars in Scorpio. Magnetic chemistry with power dynamics to navigate.
+                </p>
+                <button onclick="speakText('Physical compatibility: 88 percent. Mars in Leo meets Mars in Scorpio. Magnetic chemistry with power dynamics to navigate. Passion is intense and theatrical. Both enjoy drama and depth. Ensure mutual respect and consent. Power play only works if both enjoy it equally.')" class="w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center">
+                    <i class="fas fa-volume-high text-xs"></i>
+                </button>
+            </div>
+
+            <div class="glass-card p-5">
+                <div class="flex justify-between items-center mb-2">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-home text-green-400"></i>
+                        <span class="font-medium">Long-term Potential</span>
+                    </div>
+                    <span class="text-green-400 font-bold">85%</span>
+                </div>
+                <div class="aspect-bar mb-2">
+                    <div class="aspect-fill" style="width: 85%"></div>
+                </div>
+                <p class="text-xs text-[var(--text-secondary)] mb-3">
+                    Opposite signs create natural balance. You complete each other's missing pieces.
+                </p>
+                <button onclick="speakText('Long-term potential: 85 percent. Opposite signs create natural balance. You complete each others missing pieces. Alex teaches Jordan initiative and self-focus. Jordan teaches Alex partnership and compromise. This is a growth-oriented relationship that gets better with time.')" class="w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center">
+                    <i class="fas fa-volume-high text-xs"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Karmic Insights -->
+        <div class="glass-card p-6 mb-6">
+            <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                <i class="fas fa-infinity text-purple-400"></i>
+                Karmic Connections
+            </h3>
+            
+            <div class="space-y-4">
+                <div class="p-4 rounded-lg bg-green-500/10 border border-green-500/30">
+                    <div class="flex items-start gap-3">
+                        <i class="fas fa-arrow-up text-green-400 mt-1"></i>
+                        <div class="flex-1">
+                            <div class="font-medium mb-1">North Node Conjunction</div>
+                            <p class="text-sm text-[var(--text-secondary)]">
+                                You are meant to grow together. This relationship supports both your soul's evolution toward your highest potential.
+                            </p>
+                        </div>
+                        <button onclick="speakText('North Node Con Get a professional URL instantly
+
+---
+
+## Important: Fix Your App First
+
+Before publishing, you need to complete the missing pieces. Here's the full working code structure:
+
+### 1. Create `astrology.html`
+```html
+<!DOCTYPE html>
+<html lang="en" data-theme="cosmic">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic Insights - Bind</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff6b6b;
+            --secondary: #4ecdc4;
+            --bg-dark: #0f0f1e;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+        [data-theme="cosmic"] {
+            --bg-gradient: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 50%, #16213e 100%);
+            --accent: #ff6b6b;
+            --accent-secondary: #4ecdc4;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+        }
+        [data-theme="aurora"] {
+            --bg-gradient: linear-gradient(135deg, #0d3328 0%, #1a4d3a 50%, #0f2e3f 100%);
+            --accent: #00d9a5;
+            --accent-secondary: #00b4d8;
+            --text-primary: #e0f2f1;
+            --text-secondary: #80cbc4;
+            --glass-bg: rgba(0, 217, 165, 0.08);
+        }
+        [data-theme="solar"] {
+            --bg-gradient: linear-gradient(135deg, #2d1b0e 0%, #4a2c17 50%, #1e1a2e 100%);
+            --accent: #ff9f43;
+            --accent-secondary: #feca57;
+            --text-primary: #fff5e6;
+            --text-secondary: #ffd8a8;
+            --glass-bg: rgba(255, 159, 67, 0.1);
+        }
+        [data-theme="midnight"] {
+            --bg-gradient: linear-gradient(135deg, #000000 0%, #0a0a0a 50%, #1a1a2e 100%);
+            --accent: #6c5ce7;
+            --accent-secondary: #a29bfe;
+            --text-primary: #dfe6e9;
+            --text-secondary: #b2bec3;
+            --glass-bg: rgba(108, 92, 231, 0.08);
+        }
+        [data-theme="rose"] {
+            --bg-gradient: linear-gradient(135deg, #2d1f2d 0%, #3d2b3d 50%, #2d2636 100%);
+            --accent: #fd79a8;
+            --accent-secondary: #fdcb6e;
+            --text-primary: #ffeaa7;
+            --text-secondary: #fab1a0;
+            --glass-bg: rgba(253, 121, 168, 0.1);
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-primary);
+            min-height: 100vh;
+            transition: all 0.5s ease;
+        }
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+        }
+        .nav-bottom {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--glass-border);
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-around;
+            z-index: 100;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 16px;
+            border-radius: 16px;
+            transition: all 0.3s ease;
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+        .nav-item.active {
+            color: var(--accent);
+            background: rgba(255,255,255,0.1);
+        }
+        .transit-card {
+            border-left: 4px solid var(--accent);
+            transition: all 0.3s ease;
+        }
+        .transit-card:hover {
+            transform: translateX(5px);
+        }
+        .zodiac-icon {
+            font-size: 2rem;
+            filter: drop-shadow(0 0 10px var(--accent));
+        }
+    </style>
+</head>
+<body class="pb-24">
+    <header class="fixed top-0 left-0 right-0 z-50 px-6 py-4 flex justify-between items-center glass-card rounded-none border-x-0 border-t-0">
+        <div class="flex items-center gap-3">
+            <a href="index.html" class="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <div>
+                <h1 class="font-bold text-lg">Cosmic Insights</h1>
+                <div class="text-xs text-[var(--text-secondary)]">Today's Astrological Weather</div>
+            </div>
+        </div>
+        <button onclick="window.location.href='index.html'" class="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center">
+            <i class="fas fa-cog"></i>
+        </button>
+    </header>
+
+    <main class="pt-24 px-6 max-w-4xl mx-auto">
+        <!-- Current Date -->
+        <div class="text-center mb-8">
+            <div class="text-3xl font-bold mb-2" id="currentDate">Loading...</div>
+            <div class="text-[var(--text-secondary)]">Planetary positions affecting your relationship</div>
+        </div>
+
+        <!-- Moon Phase -->
+        <div class="glass-card p-6 mb-6 text-center relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-yellow-400/20 to-orange-500/20 rounded-full blur-2xl"></div>
+            <div class="relative z-10">
+                <div class="text-6xl mb-4">🌔</div>
+                <h2 class="text-xl font-bold mb-1">Waxing Gibbous</h2>
+                <p class="text-sm text-[var(--text-secondary)] mb-4">Building energy • Manifestation phase</p>
+                <div class="flex justify-center gap-4 text-sm">
+                    <div class="px-4 py-2 rounded-full bg-white/10">
+                        <i class="fas fa-arrow-up text-green-400 mr-2"></i>Growing
+                    </div>
+                    <div class="px-4 py-2 rounded-full bg-white/10">
+                        <i class="fas fa-seedling text-green-400 mr-2"></i>Plant intentions
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Transits -->
+        <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+            <i class="fas fa-meteor text-[var(--accent)]"></i>
+            Active Transits
+        </h3>
+
+        <div class="space-y-4 mb-8">
+            <div class="glass-card p-5 transit-card border-l-purple-500">
+                <div class="flex items-start justify-between mb-3">
+                    <div class="flex items-center gap-3">
+                        <span class="zodiac-icon">☿️</span>
+                        <div>
+                            <div class="font-bold">Mercury in Scorpio</div>
+                            <div class="text-xs text-[var(--text-secondary)]">Communication • Depth • Secrets</div>
+                        </div>
+                    </div>
+                    <button onclick="speakText('Mercury in Scorpio. Communication becomes intense and probing. This is excellent for deep, meaningful conversations but challenging for light small talk. Both partners may feel the urge to investigate or uncover truths. Warning: Avoid interrogation-style questioning. Instead, practice vulnerable sharing.')" class="w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center">
+                        <i class="fas fa-volume-high text-xs"></i>
+                    </button>
+                </div>
+                <p class="text-sm text-[var(--text-secondary)] mb-3">
+                    Deep truths surface now. Communication is intense and transformative. Perfect for addressing buried issues.
+                </p>
+                <div class="flex gap-2">
+                    <span class="text-xs bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full">Deep Talks</span>
+                    <span class="text-xs bg-red-500/20 text-red-300 px-3 py-1 rounded-full">Intensity</span>
+                </div>
+            </div>
+
+            <div class="glass-card p-5 transit-card border-l-pink-500">
+                <div class="flex items-start justify-between mb-3">
+                    <div class="flex items-center gap-3">
+                        <span class="zodiac-icon">♀️</span>
+                        <div>
+                            <div class="font-bold">Venus Trine Neptune</div>
+                            <div class="text-xs text-[var(--text-secondary)]">Romance • Dreams • Spirituality</div>
+                        </div>
+                    </div>
+                    <button onclick="speakText('Venus Trine Neptune. A beautiful, dreamy aspect for romance and spiritual connection. Your empathy is heightened. Ideal for creative dates, spiritual practices, or rekindling magic. Caution: Do not ignore red flags due to rose-colored glasses. Stay grounded while enjoying the magic.')" class="w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center">
+                        <i class="fas fa-volume-high text-xs"></i>
+                    </button>
+                </div>
+                <p class="text-sm text-[var(--text-secondary)] mb-3">
+                    Romantic idealism peaks. Spiritual connection and creative expression flow easily between you.
+                </p>
+                <div class="flex gap-2">
+                    <span class="text-xs bg-pink-500/20 text-pink-300 px-3 py-1 rounded-full">Romance</span>
+                    <span class="text-xs bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full">Spiritual</span>
+                </div>
+            </div>
+
+            <div class="glass-card p-5 transit-card border-l-red-500">
+                <div class="flex items-start justify-between mb-3">
+                    <div class="flex items-center gap-3">
+                        <span class="zodiac-icon">♂️</span>
+                        <div>
+                            <div class="font-bold">Mars Square Pluto</div>
+                            <div class="text-xs text-[var(--text-secondary)]">Power • Transformation • Conflict</div>
+                        </div>
+                    </div>
+                    <button onclick="speakText('Mars Square Pluto. Volcanic energy that can trigger power struggles. This is intense passion but also potential for conflict. Channel this into physical activity together or intimate passion. Critical: Avoid manipulation or control tactics. Recognize this as cosmic weather, not permanent personality flaws.')" class="w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center">
+                        <i class="fas fa-volume-high text-xs"></i>
+                    </button>
+                </div>
+                <p class="text-sm text-[var(--text-secondary)] mb-3">
+                    Power dynamics intensify. Channel this energy into passion and transformation, not conflict.
+                </p>
+                <div class="flex gap-2">
+                    <span class="text-xs bg-orange-500/20 text-orange-300 px-3 py-1 rounded-full">Passion</span>
+                    <span class="text-xs bg-red-500/20 text-red-300 px-3 py-1 rounded-full">Caution</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Compatibility with Today's Energy -->
+        <div class="glass-card p-6 mb-6">
+            <h3 class="text-lg font-semibold mb-4">How This Affects Your Bond</h3>
+            <div class="space-y-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center text-xl">♈</div>
+                    <div class="flex-1">
+                        <div class="flex justify-between mb-1">
+                            <span class="text-sm font-medium">Alex (Aries)</span>
+                            <span class="text-xs text-[var(--accent)]">High Impact</span>
+                        </div>
+                        <div class="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-blue-400 to-purple-500 rounded-full" style="width: 85%"></div>
+                        </div>
+                        <p class="text-xs text-[var(--text-secondary)] mt-1">Mars energy amplifies your natural drive</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-pink-500/20 flex items-center justify-center text-xl">♎</div>
+                    <div class="flex-1">
+                        <div class="flex justify-between mb-1">
+                            <span class="text-sm font-medium">Jordan (Libra)</span>
+                            <span class="text-xs text-[var(--accent)]">Moderate Impact</span>
+                        </div>
+                        <div class="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-pink-400 to-purple-500 rounded-full" style="width: 65%"></div>
+                        </div>
+                        <p class="text-xs text-[var(--text-secondary)] mt-1">Venus harmony supports your diplomacy</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Retrograde Status -->
+        <div class="glass-card p-6">
+            <h3 class="text-lg font-semibold mb-4">Retrograde Status</h3>
+            <div class="grid grid-cols-3 gap-4">
+                <div class="text-center p-4 rounded-xl bg-red-500/10 border border-red-500/30">
+                    <div class="text-2xl mb-2">☿️</div>
+                    <div class="text-sm font-medium text-red-400">Mercury</div>
+                    <div class="text-xs text-[var(--text-secondary)]">Retrograde</div>
+                </div>
+                <div class="text-center p-4 rounded-xl bg-green-500/10 border border-green-500/30">
+                    <div class="text-2xl mb-2">♀️</div>
+                    <div class="text-sm font-medium text-green-400">Venus</div>
+                    <div class="text-xs text-[var(--text-secondary)]">Direct</div>
+                </div>
+                <div class="text-center p-4 rounded-xl bg-green-500/10 border border-green-500/30">
+                    <div class="text-2xl mb-2">♂️</div>
+                    <div class="text-sm font-medium text-green-400">Mars</div>
+                    <div class="text-xs text-[var(--text-secondary)]">Direct</div>
+                </div>
+            </div>
+            <div class="mt-4 p-4 rounded-lg bg-yellow-500/10 border border-yellow-500/30">
+                <div class="flex items-start gap-3">
+                    <i class="fas fa-exclamation-triangle text-yellow-400 mt-1"></i>
+                    <div>
+                        <div class="font-medium text-sm mb-1">Mercury Retrograde Alert</div>
+                        <p class="text-xs text-[var(--text-secondary)]">
+                            Misunderstandings are likely. Double-check plans, avoid signing contracts if possible, and practice extra patience with communication delays.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <nav class="nav-bottom">
+        <a href="index.html" class="nav-item">
+            <i class="fas fa-home text-xl"></i>
+            <span class="text-xs">Home</span>
+        </a>
+        <a href="coaching.html" class="nav-item">
+            <i class="fas fa-comments text-xl"></i>
+            <span class="text-xs">Coach</span>
+        </a>
+        <a href="mediator.html" class="nav-item">
+            <i class="fas fa-microphone-lines text-xl"></i>
+            <span class="text-xs">Live</span>
+        </a>
+        <a href="astrology.html" class="nav-item active">
+            <i class="fas fa-star text-xl"></i>
+            <span class="text-xs">Stars</span>
+        </a>
+        <a href="compatibility.html" class="nav-item">
+            <i class="fas fa-heart text-xl"></i>
+            <span class="text-xs">Bond</span>
+        </a>
+    </nav>
+
+    <script>
+        // Set current date
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', options);
+
+        // Load theme
+        const savedTheme = localStorage.getItem('theme') || 'cosmic';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+
+        function speakText(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 0.9;
+                utterance.pitch = 1;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+    </script>
+</body>
+</html>
